@@ -1,0 +1,2 @@
+# ecs-blue-green-deployment
+The CloudFormation template builds an automated CI/CD pipeline for doing blue green deployments on ECS. The pipeline leverages Amazon's Code* services to build and deploy containers onto an ECS cluster as long running services. It also includes a manual approval step calls a lambda function that discovers and swaps target group rules between 2 target groups, promoting the green version to production and demoting the blue version to staging. 
