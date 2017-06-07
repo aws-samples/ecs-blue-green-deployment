@@ -1,5 +1,5 @@
 Description: >
-  ecs-cluster. For further reference, please review [BluegreenRepo]
+  Create ECS Cluster resources for Blue/Green Deployment on ECS. For further reference, please review BluegreenRepo ==> https://github.com/awslabs/ecs-blue-green-deployment
 
 Parameters:
   InstanceType:

@@ -1,6 +1,6 @@
 # Blue/Green deployments on ECS
 
-This ReadMe is in reference to blog post on [blue green deployments on ECS][link]. Blue/Green deployments on ECS is a reference implementation that builds an automated CI/CD pipeline using CloudFormation templates. The pipeline leverages Amazon's Code* services to build and deploy containers onto an ECS cluster as long running services. It also includes a manual approval step facilitated by lambda function that discovers and swaps target group rules between 2 target groups, promoting the green version to production and demoting the blue version to staging. 
+This reference architecture is in reference to blog post on [blue green deployments on ECS][link]. It creates a continuous delivery by leveraging AWS CloudFormation templates. The templates creates resources using Amazon's Code* services to build and deploy containers onto an ECS cluster as long running services. It also includes a manual approval step facilitated by lambda function that discovers and swaps target group rules between 2 target groups, promoting the green version to production and demoting the blue version to staging. 
 
 ## Pre-Requisites
 This example uses [AWS Command Line Interface](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html) to run Step-3 below.
@@ -51,27 +51,28 @@ Click on "Review" button in Code pipeline management console and Approve the cha
 
 Count | AWS resources 
 | --- | --- |
-7   | AWS CloudFormation templates 
-1   | Amazon VPC (10.215.0.0/16)   
-1  | Code Pipeline 
-2  | Code Build projects 
-1  | Amazon S3 Bucket 
-1  | AWS Lambda 
-1  | Amazon ECS Cluster 
-2  | Amazon ECS Service 
-1  | Application Load Balancer 
-2  | Application Load Balancer Target Groups 
+7   | [AWS CloudFormation templates](https://aws.amazon.com/cloudformation/)
+1   | [Amazon VPC](https://aws.amazon.com/vpc/) (10.215.0.0/16)   
+1  | [AWS CodePipeline](https://aws.amazon.com/codepipeline/) 
+2  | [AWS CodeBuild projects](https://aws.amazon.com/codebuild/) 
+1  | [Amazon S3 Bucket](https://aws.amazon.com/s3/) 
+1  | [AWS Lambda](https://aws.amazon.com/lambda/) 
+1  | [Amazon ECS Cluster](https://aws.amazon.com/ecs/) 
+2  | [Amazon ECS Service](https://aws.amazon.com/ecs/) 
+1  | [Application Load Balancer](https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/) 
+2  | [Application Load Balancer Target Groups](https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/) 
 
 
 ## Implementation details
-In this implementation, we create a continuous delivery pipeline using AWS CodePipeline that automates the build with AWS CodeBuild. During first phase, the parent template (ecs-blue-green-deployment.yaml) kicks off creating VPC and CodePipeline resources. Once the pipeline is complete, rest of the resources such as ALB, Target Groups, CodeBuild, ECS resources are instantiated. 
+During first phase, the parent template (ecs-blue-green-deployment.yaml) kicks off creating VPC and the resources in deployment-pipeline template. This creates CodePipeline, CodeBuild and Lambda resources. Once this is complete, second phase creates the rest of resources such as ALB, Target Groups and ECS resources. Below is a screenshot of CodePipeline once all CloudFormation templates are completed
 
 [![codepipeline](images/codepipeline.png)][codepipeline]
 
-We create two ECS service and associate one Target Group to each service (Blue and Green service) as depicted in the diagram. Blue Target Group (TG) is associated with Port 80 that represents Live traffic and Green TG is associated with Port 8080 which will serve as new version of the Application. During initial rollout, both Blue and Green service serve same application version. As you introduce new release, the changes are pulled via CodePipeline and pushed down the pipeline using CodeBuild and deployed to ECS as Green service using CloudFormation
+The templates create two services on ECS cluster and associates a Target Group to each service as depicted in the diagram. Blue Target Group is associated with Port 80 that represents Live/Production traffic and Green Target Group is associated with Port 8080 and is available for new version of the Application. During initial rollout, both Blue and Green service serve same application versions. As you introduce new release, the changes are pulled via CodePipeline and pushed down the pipeline using CodeBuild and deployed to the Green service. In order to switch from Green to Blue service (or from beta to Prod environment), you have to *Approve* the release by going to CodePipeline management console and clicking *Review* button. Approving the change will trigger Lambda function (blue_green_flip.py) which does the swap of ALB Target Groups. If you discover bugs while in Production, you can revert to previous application version by clicking and approving the change again. This in turn will put Blue service back into Production. To simplify identifying which Target Groups are serving Live traffic, you can review their Tags. Target Group *IsProduction* Tag will say *true* for Production application. 
 
-[BlueGreen Diagram]
+[![bluegreen](images/bluegreen.png)][bluegreen]
 
+Here is further explaination for each stages of Code Pipeline.  
 **During Build stage**
 
 * During the first phase of build process, CodeBuild builds the docker container image and pushes to [Amazon ECR](https://aws.amazon.com/ecr/).
@@ -108,9 +109,7 @@ blue_green_flip.py has the following logic scripted
    6. Send success or failure to CodePipeline
 
 ## Cleanup
-First delete ecs-cluster CloudFormation stack, this will also delete both ECS services (BlueService and GreenService) and LoadBalancer CloudFormation stacks. Next delete the parent stack 
-
-If you used CloudFormation to create your stack, first delete ecs-cluster stack, delete s3 bucket, ECR repositories, then Delete parent stack to cleanup all resources
+First delete ecs-cluster CloudFormation stack, this will also delete both ECS services (BlueService and GreenService) and LoadBalancer CloudFormation stacks. Next delete the parent stack. This should delete all the resources that were created for this exercise 
 
 
 

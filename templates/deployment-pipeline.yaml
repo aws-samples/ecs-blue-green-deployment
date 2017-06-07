@@ -1,5 +1,5 @@
 Description: >
-  deployment-pipeline. For further reference, please review [BluegreenRepo]
+  Create CodePipeline and CodeBuild resources for Blue/Green Deployment on ECS. For further reference, please review BluegreenRepo ==> https://github.com/awslabs/ecs-blue-green-deployment
 
 Parameters:
   GitHubRepo:

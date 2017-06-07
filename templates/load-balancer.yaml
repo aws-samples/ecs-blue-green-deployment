@@ -1,5 +1,5 @@
 Description: >
-  load-balancer. For further reference, please review [BluegreenRepo]
+  Create Application Load Balancer resources for Blue/Green Deployment on ECS. For further reference, please review BluegreenRepo ==> https://github.com/awslabs/ecs-blue-green-deployment
 
 Parameters:
   VpcId:

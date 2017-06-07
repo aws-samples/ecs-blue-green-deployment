@@ -1,7 +1,5 @@
 Description: >
-  This template illustrates how to use AWS CodeBuild and AWS CodePipeline to
-  achieve blue green continuous deployment of a Docker container to an Amazon EC2 Container Service cluster. 
-  For further reference, please review [BluegreenRepo]
+  This template illustrates reference architecture for Blue/Green Deployment on ECS. For further reference, please review BluegreenRepo ==> https://github.com/awslabs/ecs-blue-green-deployment
 
 
 Parameters:
