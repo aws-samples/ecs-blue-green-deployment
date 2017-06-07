@@ -1,17 +1,17 @@
 # Blue/Green deployments on ECS
 
-This ReadMe is in reference to blog post on [blue green deployments on ECS][link]. 
+This ReadMe is in reference to blog post on [blue green deployments on ECS][link]. Blue/Green deployments on ECS is a reference implementation that builds an automated CI/CD pipeline using CloudFormation templates. The pipeline leverages Amazon's Code* services to build and deploy containers onto an ECS cluster as long running services. It also includes a manual approval step facilitated by lambda function that discovers and swaps target group rules between 2 target groups, promoting the green version to production and demoting the blue version to staging. 
 
 ## Pre-Requisites
 This example uses [AWS Command Line Interface](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html) to run Step-3 below.
 
-If you haven't installed AWS CLI, please follow [instructions](http://docs.aws.amazon.com/cli/latest/userguide/installing.html). Your CLI [configuration](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) need PowerUserAccess and IAMFullAccess [IAM policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) associated with your credentials
+Pease follow [instructions](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) if you haven't installed AWS CLI. Your CLI [configuration](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) need PowerUserAccess and IAMFullAccess [IAM policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) associated with your credentials
 
 ```console
 aws --version
 ```
 
-Output from above must yield **AWS CLI version >= 1.11.37** in order to continue further.
+Output from above must yield **AWS CLI version >= 1.11.37** 
 
 ## Quick setup in three steps
 
@@ -30,9 +30,9 @@ git clone https://github.com/<your_github_username>/ecs-demo-php-simple-app
 git clone https://github.com/awslabs/ecs-blue-green-deployment
 ```
 
-#### 3. Run /bin/deploy
+#### 3. Run bin/deploy
 ```console
-/bin/deploy
+bin/deploy
 ```
 
 Here are the inputs required to launch CloudFormation templates:
@@ -45,7 +45,7 @@ Sit back and relax until all the resources are created for you. After the templa
 
 For testing Blue Green deployment, Go ahead and make a change in ECS Sample App. For ex, edit src/index.php and update the background-color to #20E941 to change to Green background color. After commiting to your repo, Code Pipeline will pick the change automatically and go through the process of updating your application. 
 
-Click on "Review" button in Code pipeline and Approve the change. Now you should see the new version of the application with Green background. 
+Click on "Review" button in Code pipeline management console and Approve the change. Now you should see the new version of the application with Green background. 
 
 ## Resources created in this exercise
 
