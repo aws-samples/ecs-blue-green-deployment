@@ -22,7 +22,7 @@ def handler():
         1. Retrieve artifact (build.json) from the previous stage (CodeBuild phase, which builds application container images)
         2. Check if the load balancer exists. Name of the ELB is fed through environment variable by the pipeline.
         3. Get tag key value of the target group, running on port 8080 and 80 with KeyName as "Identifier"
-        4. Get Sha or the image id running on target group at port 8080 and 80
+        4. Get Sha of the image id running on target group at port 8080 and 80
         5. Edit the build.json retrieved from step-1 and append the values retrieved in step3 and step4
         6. Save the modified build.json. This file is the output from codebuild project and fed as an input to the CloudFormation
         execution stage.
