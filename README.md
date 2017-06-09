@@ -68,21 +68,22 @@ During first phase, the parent template (ecs-blue-green-deployment.yaml) kicks o
 
 [![codepipeline](images/codepipeline.png)][codepipeline]
 
-The templates create two services on ECS cluster and associates a Target Group to each service as depicted in the diagram. Blue Target Group is associated with Port 80 that represents Live/Production traffic and Green Target Group is associated with Port 8080 and is available for new version of the Application. During initial rollout, both Blue and Green service serve same application versions. As you introduce new release, the changes are pulled via CodePipeline and pushed down the pipeline using CodeBuild and deployed to the Green service. In order to switch from Green to Blue service (or from beta to Prod environment), you have to *Approve* the release by going to CodePipeline management console and clicking *Review* button. Approving the change will trigger Lambda function (blue_green_flip.py) which does the swap of ALB Target Groups. If you discover bugs while in Production, you can revert to previous application version by clicking and approving the change again. This in turn will put Blue service back into Production. To simplify identifying which Target Groups are serving Live traffic, you can review their Tags. Target Group *IsProduction* Tag will say *true* for Production application. 
+The templates create two services on ECS cluster and associates a Target Group to each service as depicted in the diagram. Blue Target Group is associated with Port 80 that represents Live/Production traffic and Green Target Group is associated with Port 8080 and is available for new version of the Application. During initial rollout, both Blue and Green service serve same application versions. As you introduce new release, CodePipeline picks those changes and are pushed down the pipeline using CodeBuild and deployed to the Green service. In order to switch from Green to Blue service (or from beta to Prod environment), you have to _Approve_** the release by going to CodePipeline management console and clicking _Review_** button. Approving the change will trigger Lambda function (blue_green_flip.py) which does the swap of ALB Target Groups. If you discover bugs while in Production, you can revert to previous application version by clicking and approving the change again. This in turn will put Blue service back into Production. To simplify identifying which Target Groups are serving Live traffic, we have added Tags on ALB Target Groups. Target Group **IsProduction** Tag will say **true** for Production application. 
 
-[![bluegreen](images/bluegreen.png)][bluegreen]
+[![bluegreen](images/ecs-bluegreen.png)][bluegreen]
 
 Here is further explaination for each stages of Code Pipeline.  
+
 **During Build stage**
 
-* During the first phase of build process, CodeBuild builds the docker container image and pushes to [Amazon ECR](https://aws.amazon.com/ecr/).
- This repository got created when deployment-pipeline.yaml was executed.
-* During the second phase of the build process, Codebuild executes scripts/deployer.py , which executes the following scripted logic
+* During first phase, CodeBuild builds the docker container image and pushes to [Amazon ECR](https://aws.amazon.com/ecr/).
+ 
+* During second phase, Codebuild executes scripts/deployer.py which executes the following scripted logic
 
   1. Retrieve artifact (build.json) from the previous phase (CodeBuild phase, which builds application container images)
   2. Check if the load balancer exists. Name of the ELB is fed through environment variable by the pipeline.
   3. Get tag key value of the target group, running on port 8080 and 80 with KeyName as "Identifier". It will be either "Code1" or "Code2"
-  4. Get Sha or the image id running on target group at port 8080 and 80
+  4. Get Sha of the image id running on target group at port 8080 and 80
   5. Edit the build.json retrieved from step-1 and append the values retrieved in step3 and step4
   6. Save the modified build.json. This file is the output from codebuild project and fed as an input to the CloudFormation
      execution stage.This json file has the following schema
@@ -98,18 +99,17 @@ CodePipeline executes templates/ecs-cluster.yaml. The CloudFormation input param
 
 **During Review stage** 
 The pipeline offers manual "Review" button so that the approver can review code and Approve new release.
-Providing approvals at this stage will trigger the Lambda function (blue_green_flip.py) which swaps the Green TG to Live traffic. You can checkout sample app to see new release change. You can also determine by reviewing ALB TG Tags. Blue TG IsProduction tag will say as False and Green TG will say True. If there are any issues with Production traffic, you can easily revert back to previous version by clicking "Review" button and Approving the change.
-blue_green_flip.py has the following logic scripted
+Providing approvals at this stage will trigger the Lambda function (blue_green_flip.py) which swaps the Green Target Group to Live traffic. You can checkout sample app to see new release change. blue_green_flip.py has the following logic scripted
 
    1. Read Job Data from input json
    2. Read Job ID from input json
    3. Get parameters from input json
    4. Get Load balancer name from parameters
-   5. Identify the TargetGroup running on this Load Balancer at port 80 and port 8080.Swap them. Also swap the values of "IsProduction" tags.
+   5. Identify the TargetGroup running on this Load Balancer at port 80 and port 8080. Perform the TargetGroup Swap. Also swap the values of "IsProduction" tags.
    6. Send success or failure to CodePipeline
 
 ## Cleanup
-First delete ecs-cluster CloudFormation stack, this will also delete both ECS services (BlueService and GreenService) and LoadBalancer CloudFormation stacks. Next delete the parent stack. This should delete all the resources that were created for this exercise 
+First delete ecs-cluster CloudFormation stack, this will delete both ECS services (BlueService and GreenService) and LoadBalancer stacks. Next delete the parent stack. This should delete all the resources that were created for this exercise 
 
 
 
