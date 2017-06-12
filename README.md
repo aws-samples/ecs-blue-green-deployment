@@ -80,9 +80,9 @@ The templates create two services on ECS cluster and associates a Target Group t
 
 Here is further explaination for each stages of Code Pipeline.  
 
-**During Build stage**
+**<u>Build stage</u>**
 
-* During first phase, CodeBuild builds the docker container image and pushes to [Amazon ECR](https://aws.amazon.com/ecr/).
+* During first phase of build stage, CodeBuild builds the docker container image and pushes to [Amazon ECR](https://aws.amazon.com/ecr/).
  
 * During second phase, Codebuild executes scripts/deployer.py which executes the following scripted logic
 
@@ -100,10 +100,10 @@ Here is further explaination for each stages of Code Pipeline.
   If the load balancer does not exists (as found in step-2), this would imply that the stack is executed for the first time, and the values of "CONTAINER_TAG1" and CONTAINER_TAG2" will be the same and default to the
   value retrieved from build.json in step-1
 
-**During Deploy stage** 
+**<u>Deploy stage</u>** 
 CodePipeline executes templates/ecs-cluster.yaml. The CloudFormation input parameters with KeyName as "Code1" and "Code2" are overwritten with the values as written in the build.json, retrieved from the second phase of Build Stage.
 
-**During Review stage** 
+**<u>Review stage</u>** 
 The pipeline offers manual "Review" button so that the approver can review code and Approve new release.
 Providing approvals at this stage will trigger the Lambda function (blue_green_flip.py) which swaps the Green Target Group to Live traffic. You can checkout sample app to see new release change. blue_green_flip.py has the following logic scripted
 
