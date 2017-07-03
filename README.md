@@ -67,14 +67,14 @@ Count | AWS resources
 During first phase, the parent template (ecs-blue-green-deployment.yaml) kicks off creating VPC and the resources in deployment-pipeline template. This creates CodePipeline, CodeBuild and Lambda resources. Once this is complete, second phase creates the rest of resources such as ALB, Target Groups and ECS resources. Below is a screenshot of CodePipeline once all CloudFormation templates are completed
 
 
-[![codepipeline](images/codepipeline.png)][codepipeline]
+![codepipeline](images/codepipeline.png)
 
 
 
 The templates create two services on ECS cluster and associates a Target Group to each service as depicted in the diagram. Blue Target Group is associated with Port 80 that represents Live/Production traffic and Green Target Group is associated with Port 8080 and is available for new version of the Application. During initial rollout, both Blue and Green service serve same application versions. As you introduce new release, CodePipeline picks those changes and are pushed down the pipeline using CodeBuild and deployed to the Green service. In order to switch from Green to Blue service (or from beta to Prod environment), you have to **Approve** the release by going to CodePipeline management console and clicking **Review** button. Approving the change will trigger Lambda function (blue_green_flip.py) which does the swap of ALB Target Groups. If you discover bugs while in Production, you can revert to previous application version by clicking and approving the change again. This in turn will put Blue service back into Production. To simplify identifying which Target Groups are serving Live traffic, we have added Tags on ALB Target Groups. Target Group **IsProduction** Tag will say **true** for Production application. 
 
 
-[![bluegreen](images/ecs-bluegreen.png)][bluegreen]
+![bluegreen](images/ecs-bluegreen.png)
 
 
 
