@@ -359,7 +359,7 @@ Resources:
               OutputArtifacts:
                 - Name: DiscoveryOutput
               RunOrder: 2
-        - Name: Deploy-And-Approval
+        - Name: Deploy-Approve-Swap
           Actions:
             - Name: Deploy
               ActionTypeId:
@@ -400,9 +400,6 @@ Resources:
               Configuration:
                 CustomData: "Continue with blue-green swap ?"
               RunOrder: 2
-
-        - Name: Swap-Target-Group
-          Actions:
             - Name: swap-target-group
               ActionTypeId:
                 Category: Invoke
@@ -415,7 +412,7 @@ Resources:
                   {
                     "ElbName": "${GitHubRepo}"
                   }
-              RunOrder: 1
+              RunOrder: 3
 
 
 
