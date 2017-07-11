@@ -27,7 +27,8 @@ Resources:
           IpProtocol: "TCP"
           FromPort: 80
           ToPort: 80
-        - CidrIp: !Ref VpcCIDR
+        - CidrIp: "0.0.0.0/0"
+        # Change above to !Ref VpcCIDR, if you want to restrict the beta version of the traffic to VPC CIDRs only
           IpProtocol: "TCP"
           FromPort: 8080
           ToPort: 8080

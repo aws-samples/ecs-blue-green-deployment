@@ -359,7 +359,7 @@ Resources:
               OutputArtifacts:
                 - Name: DiscoveryOutput
               RunOrder: 2
-        - Name: Deploy
+        - Name: Deploy-Approve-Swap
           Actions:
             - Name: Deploy
               ActionTypeId:
@@ -391,36 +391,29 @@ Resources:
                 - Name: Template
                 - Name: DiscoveryOutput
               RunOrder: 1
-        -
-          Name: approve-blue-green-swap
-          Actions:
-          -
-            Name: approve-blue-green-swap
-            ActionTypeId:
-              Category: Approval
-              Owner: AWS
-              Version: 1
-              Provider: Manual
-            Configuration:
-              CustomData: "Continue with blue-green swap ?"
-            RunOrder: 1
-        -
-          Name: swap-target-group
-          Actions:
-          -
-            Name: swap-target-group
-            ActionTypeId:
-              Category: Invoke
-              Owner: AWS
-              Version: 1
-              Provider: Lambda
-            Configuration:
-              FunctionName: !Ref BlueGreenFlipLambda
-              UserParameters: !Sub |
-                {
-                  "ElbName": "${GitHubRepo}"
-                }
-            RunOrder: 1
+            - Name: approve-blue-green-swap
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Version: 1
+                Provider: Manual
+              Configuration:
+                CustomData: "Continue with blue-green swap ?"
+              RunOrder: 2
+            - Name: swap-target-group
+              ActionTypeId:
+                Category: Invoke
+                Owner: AWS
+                Version: 1
+                Provider: Lambda
+              Configuration:
+                FunctionName: !Ref BlueGreenFlipLambda
+                UserParameters: !Sub |
+                  {
+                    "ElbName": "${GitHubRepo}"
+                  }
+              RunOrder: 3
+
 
 
 Outputs:
