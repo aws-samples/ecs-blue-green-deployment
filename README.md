@@ -68,7 +68,7 @@ During first phase, the parent template (ecs-blue-green-deployment.yaml) kicks o
 This creates CodePipeline, CodeBuild and Lambda resources. Once this is complete, second phase creates the rest of resources such as ALB,
 Target Groups and ECS resources. Below is a screenshot of CodePipeline once all CloudFormation templates are completed
 
-![codepipeline](images/codepipeline.png)
+![codepipeline](images/codepipeline1.png)
 
 The templates create two services on ECS cluster and associates a Target Group to each service as depicted in the diagram.
 Blue Target Group is associated with Port 80 that represents Live/Production traffic and Green Target Group is associated with Port 8080 and is available for new version of the Application.
