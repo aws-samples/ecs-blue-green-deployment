@@ -129,7 +129,7 @@ Resources:
           TargetGroupArn: !Ref TargetGroup
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
+          AssignPublicIp: ENABLED #MENTION DISABLED if in private subnet with NAT gateway
           SecurityGroups:
              - !GetAtt SecurityGroup.GroupId
           Subnets:
