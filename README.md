@@ -1,4 +1,4 @@
-# **NOTE** Same reference architecture, but using [AWS Fargate](https://aws.amazon.com/fargate/) is available in [fargate branch](https://github.com/awslabs/ecs-blue-green-deployment/tree/fargate)
+# **NOTE:** Same reference architecture, but using [AWS Fargate](https://aws.amazon.com/fargate/) is available in [fargate branch](https://github.com/awslabs/ecs-blue-green-deployment/tree/fargate)
 
 # Blue/Green deployments on ECS
 
