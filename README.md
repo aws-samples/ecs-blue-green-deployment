@@ -1,3 +1,5 @@
+# **NOTE:** This branch uses [AWS Fargate](https://aws.amazon.com/fargate/) . If you wish not to use AWS Fargate, go to [master branch](https://github.com/awslabs/ecs-blue-green-deployment/tree/master)
+
 # Blue/Green deployments on ECS
 
 This reference architecture is in reference to blog post on [blue green deployments on ECS](https://aws.amazon.com/blogs/compute/bluegreen-deployments-with-amazon-ecs/). It creates a continuous delivery by leveraging AWS CloudFormation templates. The templates creates resources using Amazon's Code* services to build and deploy containers onto an ECS cluster as long running services. It also includes a manual approval step facilitated by lambda function that discovers and swaps target group rules between 2 target groups, promoting the green version to production and demoting the blue version to staging.
@@ -5,13 +7,13 @@ This reference architecture is in reference to blog post on [blue green deployme
 ## Pre-Requisites
 This example uses [AWS Command Line Interface](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html) to run Step-3 below.
 
-Pease follow [instructions](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) if you haven't installed AWS CLI. Your CLI [configuration](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) need PowerUserAccess and IAMFullAccess [IAM policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) associated with your credentials
+Please follow [instructions](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) if you haven't installed AWS CLI. Your CLI [configuration](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) need PowerUserAccess and IAMFullAccess [IAM policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) associated with your credentials
 
 ```console
 aws --version
 ```
 
-Output from above must yield **AWS CLI version >= 1.11.37** 
+Output from above must yield **AWS CLI version >= 1.11.37**
 
 ## Quick setup in three steps
 
@@ -19,7 +21,7 @@ Output from above must yield **AWS CLI version >= 1.11.37**
 
 [Fork](https://help.github.com/articles/fork-a-repo/) the [Amazon ECS sample app](https://github.com/awslabs/ecs-demo-php-simple-app) GitHub repository into your GitHub account.
 
-Clone the ECS Sample app repo 
+Clone the ECS Sample app repo
 ```console
 git clone https://github.com/<your_github_username>/ecs-demo-php-simple-app
 ```
@@ -28,6 +30,12 @@ git clone https://github.com/<your_github_username>/ecs-demo-php-simple-app
 
 ```console
 git clone https://github.com/awslabs/ecs-blue-green-deployment
+```
+
+#### 2a (Optional) . Switch to [fargate branch](https://github.com/awslabs/ecs-blue-green-deployment/tree/fargate) , if you want to use [AWS Fargate](https://aws.amazon.com/fargate/)
+
+```console
+git checkout fargate
 ```
 
 #### 3. Run bin/deploy
@@ -43,24 +51,24 @@ Here are the inputs required to launch CloudFormation templates:
 
 Sit back and relax until all the resources are created for you. After the templates are created, you can open ELB DNS URL to see the ECS Sample App
 
-For testing Blue Green deployment, Go ahead and make a change in ECS Sample App. For ex, edit src/index.php and update the background-color to #20E941 to change to Green background color. After commiting to your repo, Code Pipeline will pick the change automatically and go through the process of updating your application. 
+For testing Blue Green deployment, Go ahead and make a change in ECS Sample App. For ex, edit src/index.php and update the background-color to #20E941 to change to Green background color. After commiting to your repo, Code Pipeline will pick the change automatically and go through the process of updating your application.
 
-Click on "Review" button in Code pipeline management console and Approve the change. Now you should see the new version of the application with Green background. 
+Click on "Review" button in Code pipeline management console and Approve the change. Now you should see the new version of the application with Green background.
 
 ## Resources created in this exercise
 
-Count | AWS resources 
+Count | AWS resources
 | --- | --- |
 7   | [AWS CloudFormation templates](https://aws.amazon.com/cloudformation/)
-1   | [Amazon VPC](https://aws.amazon.com/vpc/) (10.215.0.0/16)   
-1  | [AWS CodePipeline](https://aws.amazon.com/codepipeline/) 
-2  | [AWS CodeBuild projects](https://aws.amazon.com/codebuild/) 
-1  | [Amazon S3 Bucket](https://aws.amazon.com/s3/) 
-1  | [AWS Lambda](https://aws.amazon.com/lambda/) 
-1  | [Amazon ECS Cluster](https://aws.amazon.com/ecs/) 
-2  | [Amazon ECS Service](https://aws.amazon.com/ecs/) 
-1  | [Application Load Balancer](https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/) 
-2  | [Application Load Balancer Target Groups](https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/) 
+1   | [Amazon VPC](https://aws.amazon.com/vpc/) (10.215.0.0/16)
+1  | [AWS CodePipeline](https://aws.amazon.com/codepipeline/)
+2  | [AWS CodeBuild projects](https://aws.amazon.com/codebuild/)
+1  | [Amazon S3 Bucket](https://aws.amazon.com/s3/)
+1  | [AWS Lambda](https://aws.amazon.com/lambda/)
+1  | [Amazon ECS Cluster](https://aws.amazon.com/ecs/)
+2  | [Amazon ECS Service](https://aws.amazon.com/ecs/)
+1  | [Application Load Balancer](https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/)
+2  | [Application Load Balancer Target Groups](https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/)
 
 
 ## Implementation details
@@ -77,12 +85,12 @@ During initial rollout, both Blue and Green service serve same application versi
 
 ![bluegreen](images/ecs-bluegreen.png)
 
-Here is further explaination for each stages of Code Pipeline.  
+Here is further explaination for each stages of Code Pipeline.
 
 **During Build stage**
 
 * During first phase, CodeBuild builds the docker container image and pushes to [Amazon ECR](https://aws.amazon.com/ecr/).
- 
+
 * During second phase, Codebuild executes scripts/deployer.py which executes the following scripted logic
 
   1. Retrieve artifact (build.json) from the previous phase (CodeBuild phase, which builds application container images)
@@ -99,10 +107,10 @@ Here is further explaination for each stages of Code Pipeline.
   If the load balancer does not exists (as found in step-2), this would imply that the stack is executed for the first time, and the values of "CONTAINER_TAG1" and CONTAINER_TAG2" will be the same and default to the
   value retrieved from build.json in step-1
 
-**During Deploy stage** 
+**During Deploy stage**
 CodePipeline executes templates/ecs-cluster.yaml. The CloudFormation input parameters with KeyName as "Code1" and "Code2" are overwritten with the values as written in the build.json, retrieved from the second phase of Build Stage.
 
-**During Review stage** 
+**During Review stage**
 The pipeline offers manual "Review" button so that the approver can review code and Approve new release.
 Providing approvals at this stage will trigger the Lambda function (blue_green_flip.py) which swaps the Green Target Group to Live traffic. You can checkout sample app to see new release change. blue_green_flip.py has the following logic scripted
 
@@ -114,7 +122,7 @@ Providing approvals at this stage will trigger the Lambda function (blue_green_f
    6. Send success or failure to CodePipeline
 
 ## Cleanup
-First delete ecs-cluster CloudFormation stack, this will delete both ECS services (BlueService and GreenService) and LoadBalancer stacks. Next delete the parent stack. This should delete all the resources that were created for this exercise 
+First delete ecs-cluster CloudFormation stack, this will delete both ECS services (BlueService and GreenService) and LoadBalancer stacks. Next delete the parent stack. This should delete all the resources that were created for this exercise
 
 
 
