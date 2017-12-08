@@ -1,3 +1,5 @@
+# **NOTE:** Same reference architecture, but using [AWS Fargate](https://aws.amazon.com/fargate/) is available in [fargate branch](https://github.com/awslabs/ecs-blue-green-deployment/tree/fargate)
+
 # Blue/Green deployments on ECS
 
 This reference architecture is in reference to blog post on [blue green deployments on ECS](https://aws.amazon.com/blogs/compute/bluegreen-deployments-with-amazon-ecs/). It creates a continuous delivery by leveraging AWS CloudFormation templates. The templates creates resources using Amazon's Code* services to build and deploy containers onto an ECS cluster as long running services. It also includes a manual approval step facilitated by lambda function that discovers and swaps target group rules between 2 target groups, promoting the green version to production and demoting the blue version to staging.
@@ -5,7 +7,7 @@ This reference architecture is in reference to blog post on [blue green deployme
 ## Pre-Requisites
 This example uses [AWS Command Line Interface](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html) to run Step-3 below.
 
-Pease follow [instructions](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) if you haven't installed AWS CLI. Your CLI [configuration](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) need PowerUserAccess and IAMFullAccess [IAM policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) associated with your credentials
+Please follow [instructions](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) if you haven't installed AWS CLI. Your CLI [configuration](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) need PowerUserAccess and IAMFullAccess [IAM policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html) associated with your credentials
 
 ```console
 aws --version
@@ -28,6 +30,12 @@ git clone https://github.com/<your_github_username>/ecs-demo-php-simple-app
 
 ```console
 git clone https://github.com/awslabs/ecs-blue-green-deployment
+```
+
+#### 2a (Optional) . Switch to [fargate branch](https://github.com/awslabs/ecs-blue-green-deployment/tree/fargate) , if you want to use [AWS Fargate](https://aws.amazon.com/fargate/)
+
+```console
+git checkout fargate
 ```
 
 #### 3. Run bin/deploy
