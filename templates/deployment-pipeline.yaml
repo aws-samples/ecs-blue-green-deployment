@@ -117,7 +117,10 @@ Resources:
                   - ec2:*
                   - elasticloadbalancing:*
                   - autoscaling:*
-
+              - Resource: !Sub arn:aws:s3:::${TemplateBucket}/*
+                Effect: Allow
+                Action:
+                  - s3:GetObject
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
     Properties:
