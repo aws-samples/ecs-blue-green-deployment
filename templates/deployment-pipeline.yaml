@@ -35,7 +35,7 @@ Resources:
     Properties:
       FunctionName: !Sub lambda-${GitHubRepo}-blue-green-swap
       Handler: blue_green_flip.handler
-      Runtime: python2.7
+      Runtime: python3.8
       Description: !Sub lambda-${GitHubRepo}-blue-green-swap
       Code:
         S3Bucket: !Ref TemplateBucket
@@ -273,7 +273,7 @@ Resources:
             discard-paths: yes
       Environment:
         ComputeType: "BUILD_GENERAL1_SMALL"
-        Image: aws/codebuild/python:2.7.12
+        Image: aws/codebuild/python:3.8.3
         Type: "LINUX_CONTAINER"
         EnvironmentVariables:
           - Name: AWS_DEFAULT_REGION
